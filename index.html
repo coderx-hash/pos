@@ -7142,7 +7142,6 @@ body.cashier-access-locked .app{
     <div id="licenseGateStatus" class="license-trial-clock hidden">05:00</div>
     <button id="startTrial" type="button" class="btn blue">Start My 5-Minute Demo</button>
     <button id="purchaseAccess" type="button" class="btn blue">💳 Avail Full Access / View Plans</button>
-    <button id="checkLicense" type="button" class="btn">Check Payment / Access Status</button>
     <button id="sellerBillingOpen" type="button" class="btn hidden">🔐 Seller: Review GCash Payments</button>
     <button id="licenseSignOut" type="button" class="btn">Use Another Account / Sign Out</button>
     <div class="muted">Same account = same timer on other devices. Preventing all repeat trials across newly created accounts requires separately verified identities and a secure backend.</div>
@@ -7179,7 +7178,7 @@ body.cashier-access-locked .app{
     <div class="pos-billing-help">Only submit after you have paid. Your reference number and paid amount will be saved securely in Firebase. Your access will remain locked or in demo until payment is verified and approved. Do not share your GCash PIN or OTP.</div>
     <button id="submitBilling" type="button" class="btn blue pos-billing-cta">Submit Payment for Verification</button>
     <div id="billingMessage" class="pos-billing-message" role="status"></div>
-    <button id="billingRefreshAccess" class="btn pos-billing-cta" type="button">↻ Check Payment Status / Refresh Access</button>
+    <div class="pos-billing-help" id="automaticPaymentNote" role="status">Payment status updates automatically when the seller approves or rejects your request. No manual refresh needed.</div>
     <div class="pos-billing-section-label">My payment requests</div>
     <div id="myBillingRequests" aria-live="polite"><div class="muted">Checking requests…</div></div>
   </div>
@@ -17778,7 +17777,6 @@ function licenseGateUI(title,message,{start=false,expired=false}={}){
   $('licenseMessage').textContent=message;
   $('startTrial').classList.toggle('hidden',!start);
   $('startTrial').disabled=false;
-  $('checkLicense').classList.remove('hidden');
   $('purchaseAccess').classList.remove('hidden');
   $('licenseGateStatus').classList.toggle('hidden',!expired);
   if(expired)$('licenseGateStatus').textContent=/subscription/i.test(title)?'SUBSCRIPTION EXPIRED':'TRIAL EXPIRED';
@@ -17901,7 +17899,6 @@ $('startTrial').onclick=async()=>{
     await verifyLicenseAndTrial();
   }catch(e){licenseGateUI('Demo Activation Failed',e.message||'Firebase trial could not be started.',{start:true})}
 };
-$('checkLicense').onclick=verifyLicenseAndTrial;
 $('licenseSignOut').onclick=async()=>{
   licenseToken++;stopTrialTicker();stopPaidExpiryTicker();licenseMode='locked';stop();
   explicitSignOutToLogin=true;await signOut(auth);
@@ -17928,6 +17925,46 @@ const SUBSCRIPTION_PLANS=Object.freeze({
   '12m':{months:12,price:1499,label:'12 Months'}
 });
 let chosenSubscription='3m',sellerVerified=false,currentLicenseExpiry=0,paidExpiryTicker=null;
+
+/* v76: automatic account and payment-status updates; no manual refresh button. */
+let accountLicenseUnsub=null,accountPaymentsUnsub=null;
+function stopAccountBillingWatchers(){
+  if(accountLicenseUnsub){accountLicenseUnsub();accountLicenseUnsub=null}
+  if(accountPaymentsUnsub){accountPaymentsUnsub();accountPaymentsUnsub=null}
+}
+function startAccountBillingWatchers(uid){
+  stopAccountBillingWatchers();
+  if(!user||user.uid!==uid)return;
+  // Firestore snapshot notifies every signed-in browser when seller updates its license.
+  // Access is always re-verified from the SERVER before the app is unlocked.
+  accountLicenseUnsub=onSnapshot(licenseRef(uid),{includeMetadataChanges:true},snap=>{
+    if(!user||user.uid!==uid||snap.metadata.fromCache)return;
+    const data=snap.exists()?snap.data():null;
+    const expires=data?.expiresAt?.toMillis?.()||0;
+    const active=data?.status==='active'&&expires>Date.now();
+    const workspace=String(data?.workspaceId||'');
+    if(active){
+      if(licenseMode!=='paid'||expires!==currentLicenseExpiry||workspace!==licensedWorkspace){
+        void verifyLicenseAndTrial();
+      }
+    }else if(licenseMode==='paid'){
+      // Seller revoked access, or an existing license expired.
+      void verifyLicenseAndTrial();
+    }
+  },err=>console.warn('License live update unavailable:',err));
+  // Update the buyer's visible requests immediately when the seller reviews them.
+  accountPaymentsUnsub=onSnapshot(
+    query(paymentRequestsCollection(),where('ownerUid','==',uid)),
+    snap=>{
+      if(!user||user.uid!==uid)return;
+      const requests=renderMyPaymentRequests(snap.docs);
+      $('submitBilling').disabled=requests.some(r=>r.status==='pending');
+    },err=>{
+      if(user?.uid===uid)$('myBillingRequests').textContent='Payment status is temporarily unavailable: '+(err.message||err);
+    }
+  );
+}
+
 function stopPaidExpiryTicker(){if(paidExpiryTicker){clearInterval(paidExpiryTicker);paidExpiryTicker=null}}
 function enforcePaidExpiry(){
   if(licenseMode==='paid'&&currentLicenseExpiry>0&&Date.now()>=currentLicenseExpiry){
@@ -17956,7 +17993,7 @@ function renderMyPaymentRequests(docs){
   $('myBillingRequests').innerHTML=list.length?list.map(r=>`
     <div class="pos-billing-order"><b>${esc(SUBSCRIPTION_PLANS[r.planId]?.label||String(r.months)+' Months')} • ${peso(r.amountPaid||0)} ${requestStatusMarkup(r.status)}</b>
     <div>Reference: ${esc(r.gcashReference)} • Submitted: ${esc(formatTimestamp(r.createdAt))}</div>
-    <div>${r.status==='approved'?'Approved — use Check Payment / Access Status to refresh.':r.status==='rejected'?'Not approved. Contact the seller or submit a corrected request.':'Awaiting seller verification; full access is not active yet.'}</div></div>`).join(''):'<div class="pos-billing-order">No payment requests yet.</div>';
+    <div>${r.status==='approved'?'Approved — your subscription activates automatically.':r.status==='rejected'?'Not approved. Contact the seller or submit a corrected request.':'Awaiting seller verification; full access is not active yet.'}</div></div>`).join(''):'<div class="pos-billing-order">No payment requests yet.</div>';
   return list;
 }
 async function refreshMyPaymentRequests(){
@@ -17982,7 +18019,6 @@ function closeBilling(){$('billingDialog').classList.add('hidden')}
 $('purchaseAccess').onclick=openBilling;
 $('topBillingBtn').onclick=openBilling;
 $('closeBilling').onclick=closeBilling;
-$('billingRefreshAccess').onclick=async()=>{closeBilling();await verifyLicenseAndTrial()};
 $('billingDialog').addEventListener('click',e=>{if(e.target===$('billingDialog'))closeBilling()});
 document.querySelectorAll('#posPlanChoices [data-plan]').forEach(b=>b.onclick=()=>setSubscriptionPlan(b.dataset.plan));
 $('copyGcash').onclick=async()=>{try{await navigator.clipboard.writeText('09483748304');$('copyGcash').textContent='Copied ✓'}catch{alert('GCash number: 0948-374-8304')}};
@@ -17997,6 +18033,7 @@ $('submitBilling').onclick=async()=>{
   if(!Number.isFinite(amountPaid)||amountPaid<1||amountPaid>100000||Math.abs(Math.round(amountPaid*100)-amountPaid*100)>0.000001)return paymentMessage('billingMessage','Enter a valid paid amount up to two decimal places.',true);
   if(amountPaid!==plan.price && !confirm(`Selected price: ${peso(plan.price)}. Entered payment: ${peso(amountPaid)}. Submit this amount for manual verification anyway?`))return;
   const btn=$('submitBilling');btn.disabled=true;
+  let requestSubmitted=false;
   try{
     const existing=await refreshMyPaymentRequests();
     if(existing.some(r=>r.status==='pending'))throw new Error('A payment is already pending verification. Please wait for the seller to review it.');
@@ -18006,11 +18043,12 @@ $('submitBilling').onclick=async()=>{
       expectedAmount:plan.price,amountPaid,gcashReference,payerName,
       status:'pending',createdAt:serverTimestamp()
     });
+    requestSubmitted=true;
     $('billingRef').value='';
     paymentMessage('billingMessage','Payment reference submitted successfully. Status: PENDING VERIFICATION. Access will activate only after the seller verifies and approves your GCash payment.');
     await refreshMyPaymentRequests();
   }catch(e){paymentMessage('billingMessage','Submission failed: '+(e.message||e),true)}
-  finally{btn.disabled=false}
+  finally{if(!requestSubmitted)btn.disabled=false}
 };
 async function verifySellerRole(){
   if(!user)return;
@@ -18172,6 +18210,7 @@ $('enterSystem').onclick=()=>{
 };
 
 onAuthStateChanged(auth,async u=>{
+  stopAccountBillingWatchers();
   user=u||null;
   staffMobileInitialRouteDone=false;
   if(!u){
@@ -18222,8 +18261,9 @@ onAuthStateChanged(auth,async u=>{
   }
   cloud('Checking license...');
   await Promise.all([verifySellerRole(), verifyLicenseAndTrial()]);
+  if(user?.uid===u.uid)startAccountBillingWatchers(u.uid);
 });
 </script>
-<!-- POS v75: Subscription + verified GCash billing; desktop/mobile -->
+<!-- POS v76: Auto-updating GCash subscription status; desktop/mobile -->
 </body>
 </html>
