@@ -7029,6 +7029,46 @@ body.cashier-access-locked .app{
 .authbox-clean{max-height:calc(100dvh - 28px);overflow-y:auto}
 @media(max-width:720px){.registration-role-wrap select{min-height:44px;font-size:16px!important}}
 </style>
+
+<style id="pos-v75-billing-css">
+/* POS licensing & GCash order flow — responsive on mobile and desktop */
+.pos-billing-backdrop{position:fixed;inset:0;z-index:2500;background:rgba(13,27,48,.78);display:grid;place-items:center;padding:12px;overflow-y:auto}
+.pos-billing-backdrop.hidden{display:none!important}
+.pos-billing-shell{width:min(730px,100%);max-height:calc(100dvh - 24px);overflow-y:auto;background:#fff;border:1px solid #e4eaf2;border-radius:20px;box-shadow:0 22px 74px rgba(0,0,0,.24);padding:20px;color:#1e293b}
+.pos-billing-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:16px}
+.pos-billing-head h2{font-size:22px;margin:3px 0 2px;color:#17243a}
+.pos-billing-head p{font-size:11px;color:#697689;margin:0;line-height:1.5}
+.pos-billing-close{border:1px solid #d8e1ed;background:#fff;border-radius:9px;min-height:36px;padding:6px 12px;cursor:pointer;font-weight:800}
+.pos-billing-section-label{font-size:10px;font-weight:900;letter-spacing:.09em;color:#536782;margin:12px 0 9px;text-transform:uppercase}
+.pos-plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pos-plan{position:relative;text-align:left;background:#fff;border:2px solid #e4e9f2;border-radius:13px;padding:13px 10px;cursor:pointer;min-height:100px;display:flex;flex-direction:column;gap:8px}
+.pos-plan:hover{border-color:#a9c2f7}.pos-plan.selected{border-color:#2f6fed;background:#edf4ff}
+.pos-plan .period{font-weight:850;font-size:13px}.pos-plan .cost{font-weight:900;font-size:24px;color:#1f5bd8}.pos-plan small{color:#64748b;font-size:9px}
+.pos-gcash-area{background:#f6f9fe;border:1px solid #e2eaf5;border-radius:13px;padding:14px;margin-top:12px}
+.pos-gcash-head{display:flex;justify-content:space-between;align-items:center;gap:7px;flex-wrap:wrap}
+.pos-gcash-number{font-weight:900;color:#1d4fba;font-size:22px;letter-spacing:.025em;overflow-wrap:anywhere}
+.pos-gcash-name{font-size:12px;font-weight:800;margin-top:3px}
+.pos-billing-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.pos-billing-field label{display:block;font-size:10px;font-weight:850;color:#45566d;margin-bottom:5px}
+.pos-billing-field input{width:100%;min-height:44px;border:1px solid #d5dfed;background:#fff;border-radius:10px;padding:10px 11px;font-size:14px}
+.pos-billing-help{font-size:10px;color:#617186;line-height:1.6;margin-top:6px}
+.pos-billing-cta{width:100%;margin-top:12px;min-height:48px;font-size:13px!important}
+.pos-billing-message{padding:10px 12px;border-radius:9px;background:#edf4ff;color:#254e9c;font-size:11px;margin-top:10px;line-height:1.5}
+.pos-billing-message:empty{display:none}.pos-billing-message.error{background:#fff0f0;color:#9b2525}
+.pos-billing-order{background:#f8fafc;border:1px solid #e0e7ef;border-radius:10px;padding:10px;margin:6px 0;font-size:11px;line-height:1.6}
+.pos-billing-order b{display:block;color:#27374d}
+.pos-billing-pill{font-size:10px;font-weight:900;border-radius:20px;padding:3px 7px;background:#fff1cc;color:#825400;display:inline-block;margin-top:4px}
+.pos-billing-pill.approved{background:#dcfce7;color:#166534}.pos-billing-pill.rejected{background:#fee2e2;color:#991b1b}
+.pos-seller-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pos-seller-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.pos-seller-actions .btn{flex:1;min-width:100px}
+.pos-seller-filter{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}
+.pos-seller-filter select{padding:9px;border:1px solid #d5dfed;border-radius:10px;background:#fff}
+.pos-top-billing{font-weight:850;white-space:nowrap}
+@media(max-width:720px){.pos-billing-shell{border-radius:15px;padding:13px;max-height:calc(100dvh - 12px)}.pos-billing-backdrop{padding:6px;align-items:center}.pos-billing-head h2{font-size:19px}.pos-plan-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.pos-plan{padding:10px 7px;min-height:88px}.pos-plan .period{font-size:11px}.pos-plan .cost{font-size:17px}.pos-billing-grid{grid-template-columns:1fr}.pos-gcash-number{font-size:19px}.pos-top-billing{font-size:9px!important;min-height:30px!important;padding:6px!important}.pos-seller-grid{grid-template-columns:1fr}}
+@media(max-width:390px){.pos-plan .cost{font-size:15px}.pos-top-billing{font-size:8px!important}}
+@media print{.pos-billing-backdrop{display:none!important}}
+</style>
 </head>
 <body class="license-lock">
 
@@ -7096,14 +7136,67 @@ body.cashier-access-locked .app{
 
 <div id="licenseGate" class="license-gate hidden" role="dialog" aria-modal="true" aria-labelledby="licenseTitle">
   <div class="license-card">
-    <span class="license-eyebrow">POS • LICENSE & DEMO</span>
+    <span class="license-eyebrow">POS • DEMO & SUBSCRIPTION</span>
     <h2 id="licenseTitle">5-Minute Free Trial</h2>
     <p id="licenseMessage">Create or sign in to your account. Your one-time demo lasts five minutes from activation.</p>
     <div id="licenseGateStatus" class="license-trial-clock hidden">05:00</div>
     <button id="startTrial" type="button" class="btn blue">Start My 5-Minute Demo</button>
-    <button id="checkLicense" type="button" class="btn">Check Purchased License</button>
+    <button id="purchaseAccess" type="button" class="btn blue">💳 Avail Full Access / View Plans</button>
+    <button id="checkLicense" type="button" class="btn">Check Payment / Access Status</button>
+    <button id="sellerBillingOpen" type="button" class="btn hidden">🔐 Seller: Review GCash Payments</button>
     <button id="licenseSignOut" type="button" class="btn">Use Another Account / Sign Out</button>
     <div class="muted">Same account = same timer on other devices. Preventing all repeat trials across newly created accounts requires separately verified identities and a secure backend.</div>
+  </div>
+</div>
+
+
+<!-- Buyer checkout: proof of GCash payment is a request, not automatic proof. -->
+<div id="billingDialog" class="pos-billing-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="billingTitle">
+  <div class="pos-billing-shell">
+    <div class="pos-billing-head">
+      <div><div class="license-eyebrow">POS • FULL ACCESS</div><h2 id="billingTitle">Avail POS Subscription</h2>
+      <p>Choose your plan, pay through GCash, then send your payment details for verification.</p></div>
+      <button id="closeBilling" type="button" class="pos-billing-close">✕ Close</button>
+    </div>
+    <div class="pos-billing-section-label">1. Select plan</div>
+    <div class="pos-plan-grid" id="posPlanChoices">
+      <button class="pos-plan selected" type="button" data-plan="3m" aria-pressed="true"><span class="period">3 Months</span><span class="cost">₱499</span><small>Full access</small></button>
+      <button class="pos-plan" type="button" data-plan="6m" aria-pressed="false"><span class="period">6 Months</span><span class="cost">₱899</span><small>Full access</small></button>
+      <button class="pos-plan" type="button" data-plan="12m" aria-pressed="false"><span class="period">12 Months</span><span class="cost">₱1,499</span><small>Full access</small></button>
+    </div>
+    <div class="pos-billing-section-label">2. Send payment via GCash</div>
+    <div class="pos-gcash-area">
+      <div class="pos-gcash-head"><div><div style="font-size:10px;font-weight:900;color:#536782">SEND TO GCASH NUMBER</div><div class="pos-gcash-number">0948-374-8304</div><div class="pos-gcash-name">Account: Angelo I..</div></div><button id="copyGcash" class="btn small" type="button">Copy Number</button></div>
+      <div class="pos-billing-help">Amount to send for selected plan: <strong id="billingDue">₱499.00</strong>. Check the recipient in GCash before sending. Payments are reviewed manually.</div>
+    </div>
+    <div class="pos-billing-section-label">3. Submit your payment details</div>
+    <div class="pos-billing-grid">
+      <div class="pos-billing-field"><label for="billingRef">GCash Reference Number *</label><input id="billingRef" inputmode="text" maxlength="40" placeholder="e.g. 1234567890123" autocomplete="off"></div>
+      <div class="pos-billing-field"><label for="billingPaid">Amount Paid (PHP) *</label><input id="billingPaid" type="number" min="1" max="100000" step="0.01" value="499"></div>
+      <div class="pos-billing-field"><label for="billingSender">GCash Sender Name *</label><input id="billingSender" maxlength="80" placeholder="Name displayed on transaction" autocomplete="name"></div>
+      <div class="pos-billing-field"><label>Account</label><input id="billingAccount" readonly aria-label="Buyer account email"></div>
+    </div>
+    <div class="pos-billing-help">Only submit after you have paid. Your reference number and paid amount will be saved securely in Firebase. Your access will remain locked or in demo until payment is verified and approved. Do not share your GCash PIN or OTP.</div>
+    <button id="submitBilling" type="button" class="btn blue pos-billing-cta">Submit Payment for Verification</button>
+    <div id="billingMessage" class="pos-billing-message" role="status"></div>
+    <button id="billingRefreshAccess" class="btn pos-billing-cta" type="button">↻ Check Payment Status / Refresh Access</button>
+    <div class="pos-billing-section-label">My payment requests</div>
+    <div id="myBillingRequests" aria-live="polite"><div class="muted">Checking requests…</div></div>
+  </div>
+</div>
+
+<!-- Seller-only billing queue, gated by sellerAdmins/<Firebase Auth UID>. -->
+<div id="sellerBillingDialog" class="pos-billing-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sellerBillingTitle">
+  <div class="pos-billing-shell">
+    <div class="pos-billing-head">
+      <div><div class="license-eyebrow">POS • SELLER ONLY</div><h2 id="sellerBillingTitle">GCash Payment Verification</h2>
+      <p>Verify the actual payment in your GCash app first. Ref number submission alone is not proof of payment.</p></div>
+      <button id="closeSellerBilling" type="button" class="pos-billing-close">✕ Close</button>
+    </div>
+    <div class="pos-seller-filter"><label style="font-size:12px;font-weight:800">Payment requests</label><select id="sellerPaymentFilter"><option value="pending">Pending only</option><option value="all">All statuses</option></select><button id="refreshSellerBilling" class="btn small" type="button">Refresh</button></div>
+    <div id="sellerPaymentList"><div class="muted">Loading…</div></div>
+    <div class="pos-billing-help">Approval activates the buyer's license starting from approval, or extends the remaining paid term. Always verify GCash amount, reference and recipient before approval. Admin role is granted only for accounts that requested Admin / Owner.</div>
+    <div id="sellerBillingMsg" class="pos-billing-message" role="status"></div>
   </div>
 </div>
 
@@ -7233,7 +7326,7 @@ body.cashier-access-locked .app{
 
 <div class="app">
   <aside class="side">
-    <div class="brand">CHIKI<span>TOS</span></div>
+    <div class="brand">POS</div>
     <div class="tag">Shared Stock • Role Based POS</div>
     <div class="nav">
       <button id="dashboardNav" class="active" data-page="dashPage">🏠 Dashboard</button>
@@ -7274,6 +7367,8 @@ body.cashier-access-locked .app{
         <span id="topRole" class="top-role">STAFF</span>
         <span id="trialClock" class="license-trial-clock hidden">DEMO 05:00</span>
         <button id="trialSwitchRole" class="btn small license-trial-switch hidden" type="button">Switch to Cashier</button>
+        <button id="topBillingBtn" class="btn small pos-top-billing" type="button">💳 Plans</button>
+        <button id="topSellerBilling" class="btn small pos-top-billing hidden" type="button">Payments</button>
         <span id="cloud" class="cloud">Not signed in</span>
         <button id="notificationBell" class="notification-bell" type="button" title="Notifications">🔔 <span id="notificationCount" class="notification-count hidden">0</span></button>
         <span id="liveSyncBadge" class="live-sync-badge" title="Realtime Firebase sync">● LIVE AUTO-SYNC</span>
@@ -8376,7 +8471,7 @@ body.cashier-access-locked .app{
           <div class="void-search-box">
             <div>
               <label>Transaction #</label>
-              <input id="staffVoidTxnSearch" placeholder="Example: CHK-20261004-R1QLDP">
+              <input id="staffVoidTxnSearch" placeholder="Example: POS-20261004-R1QLDP">
             </div>
             <button id="findVoidTransaction" class="btn blue">Find Transaction</button>
           </div>
@@ -8423,7 +8518,7 @@ body.cashier-access-locked .app{
           <div class="void-search-box">
             <div>
               <label>Transaction #</label>
-              <input id="staffDeleteTxnSearch" placeholder="Example: CHK-20261006-ABC123">
+              <input id="staffDeleteTxnSearch" placeholder="Example: POS-20261006-ABC123">
             </div>
             <button id="findDeleteTransaction" class="btn blue">Find Transaction</button>
           </div>
@@ -8587,7 +8682,7 @@ body.cashier-access-locked .app{
           <div class="void-search-box">
             <div>
               <label>Transaction #</label>
-              <input id="staffReturnTxnSearch" placeholder="Example: CHK-20261006-ABC123">
+              <input id="staffReturnTxnSearch" placeholder="Example: POS-20261006-ABC123">
             </div>
             <button id="findReturnTransaction" class="btn blue">Find Transaction</button>
           </div>
@@ -9130,7 +9225,7 @@ body.cashier-access-locked .app{
 
 <div id="printSheet" class="print-sheet">
   <div class="print-head">
-    <div><div class="print-brand">CHIKI<span>TOS</span></div><div style="font-size:8px;margin-top:2px">Sales Report</div></div>
+    <div><div class="print-brand">POS</div><div style="font-size:8px;margin-top:2px">Sales Report</div></div>
     <div class="print-title"><h2 id="pTitle">Sales Report</h2><div id="pPeriod"></div><div id="pScope"></div></div>
   </div>
   <div class="print-summary print-summary-3">
@@ -9384,7 +9479,7 @@ body.cashier-access-locked .app{
     <div class="sale-success-check">✓</div>
     <div class="sale-success-kicker">TRANSACTION COMPLETED</div>
     <h2 id="saleSuccessTitle">Sale Completed</h2>
-    <div id="saleSuccessTxn" class="sale-success-txn">CHK-—</div>
+    <div id="saleSuccessTxn" class="sale-success-txn">POS-—</div>
     <div class="sale-success-grid">
       <div><small>Amount</small><strong id="saleSuccessAmount">₱0.00</strong></div>
       <div><small>Cashier</small><strong id="saleSuccessCashier">—</strong></div>
@@ -9406,7 +9501,7 @@ import {
   signOut,sendPasswordResetEmail,setPersistence,browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
-  getFirestore,doc,getDoc,getDocFromServer,getDocs,setDoc,deleteDoc,collection,query,where,orderBy,limit,serverTimestamp,
+  getFirestore,doc,getDoc,getDocFromServer,getDocs,setDoc,updateDoc,deleteDoc,collection,query,where,orderBy,limit,serverTimestamp,
   onSnapshot,runTransaction,writeBatch
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -9918,7 +10013,7 @@ function nowTime(){return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',
 function makeTransactionNo(date,docId){
   const d=String(date||today()).replaceAll('-','');
   const key=String(docId||'XXXXXX').replace(/[^A-Za-z0-9]/g,'').slice(0,6).toUpperCase().padEnd(6,'X');
-  return `CHK-${d}-${key}`;
+  return `POS-${d}-${key}`;
 }
 function txnNo(record,prefix='CHK'){
   if(record?.transactionNo)return record.transactionNo;
@@ -17684,8 +17779,9 @@ function licenseGateUI(title,message,{start=false,expired=false}={}){
   $('startTrial').classList.toggle('hidden',!start);
   $('startTrial').disabled=false;
   $('checkLicense').classList.remove('hidden');
+  $('purchaseAccess').classList.remove('hidden');
   $('licenseGateStatus').classList.toggle('hidden',!expired);
-  if(expired)$('licenseGateStatus').textContent='TRIAL EXPIRED';
+  if(expired)$('licenseGateStatus').textContent=/subscription/i.test(title)?'SUBSCRIPTION EXPIRED':'TRIAL EXPIRED';
   $('trialClock').classList.add('hidden');
   $('trialSwitchRole').classList.add('hidden');
 }
@@ -17747,6 +17843,9 @@ async function activateWorkspace(mode,workspace,requestId){
   listen();
   if(mode==='trial'){
     tickTrial();stopTrialTicker();trialTimer=setInterval(tickTrial,1000);
+  }else if(mode==='paid'){
+    stopPaidExpiryTicker();paidExpiryTicker=setInterval(enforcePaidExpiry,10000);
+    enforcePaidExpiry();
   }
   if(isStaff())renderCashierAccessGate();
   cloud(mode==='trial'?'Demo Connected':'Licensed Connected');
@@ -17754,13 +17853,16 @@ async function activateWorkspace(mode,workspace,requestId){
 async function verifyLicenseAndTrial(){
   if(!user)return;
   const requestId=++licenseToken;
-  stopTrialTicker();stop();
+  stopTrialTicker();stopPaidExpiryTicker();stop();
   licenseMode='locked';
   licenseGateUI('Checking Account…','Checking your license and any previous demo usage.');
   try{
     const paid=await getDocFromServer(licenseRef(user.uid));
     if(requestId!==licenseToken||!user)return;
-    const active=paid.exists()&&paid.data()?.status==='active';
+    const paidData=paid.exists()?paid.data():null;
+    const paidExpires=paidData?.expiresAt?.toMillis?.()||0;
+    currentLicenseExpiry=paidExpires;
+    const active=paidData?.status==='active'&&paidExpires>Date.now();
     if(active){
       const workspace=String(paid.data().workspaceId||'');
       if(!/^pos_[A-Za-z0-9_-]{6,160}$/.test(workspace))throw new Error('Licensed workspace ID is missing/invalid. Contact the seller.');
@@ -17770,7 +17872,7 @@ async function verifyLicenseAndTrial(){
     const snap=await getDocFromServer(trialRef(user.uid));
     if(requestId!==licenseToken||!user)return;
     if(!snap.exists()){
-      licenseGateUI('Try POS for 5 Minutes','Your one-time demo has not been started yet. Start it to explore sample products, Admin reports and the Cashier POS.',{start:true});
+      licenseGateUI(paidData?'Subscription Expired':'Try POS for 5 Minutes',paidData?'Your previous POS subscription has ended. Renew a plan for full access or start an unused demo.':'Your one-time demo has not been started yet. Start it to explore sample products, Admin reports and the Cashier POS.',{start:true});
       return;
     }
     const started=snap.data()?.startedAt?.toMillis?.();
@@ -17778,7 +17880,7 @@ async function verifyLicenseAndTrial(){
     trialStartedAt=started;
     if(trialRemainingMs()<=0){
       licenseMode='expired';
-      licenseGateUI('Free Trial Already Used','This account has already completed its one-time five-minute demo. You need a purchased license to access POS again.',{expired:true});
+      licenseGateUI(paidData?'Subscription Expired':'Free Trial Already Used',paidData?'Your paid term has ended. Renew your POS subscription below to continue.':'This account has already completed its one-time five-minute demo. You need a purchased license to access POS again.',{expired:true});
       return;
     }
     await activateWorkspace('trial','demo_'+user.uid,requestId);
@@ -17801,7 +17903,7 @@ $('startTrial').onclick=async()=>{
 };
 $('checkLicense').onclick=verifyLicenseAndTrial;
 $('licenseSignOut').onclick=async()=>{
-  licenseToken++;stopTrialTicker();licenseMode='locked';stop();
+  licenseToken++;stopTrialTicker();stopPaidExpiryTicker();licenseMode='locked';stop();
   explicitSignOutToLogin=true;await signOut(auth);
 };
 $('trialSwitchRole').onclick=()=>{
@@ -17817,6 +17919,192 @@ $('trialSwitchRole').onclick=()=>{
     alert('DEMO CASHIER: Select "Demo Cashier" and use PIN 1234 to start Duty.');
   }else setCashierAccessGateVisible(false);
 };
+
+
+/* v75 — GCash subscription requests; status and expiry are enforced by Firestore Rules. */
+const SUBSCRIPTION_PLANS=Object.freeze({
+  '3m':{months:3,price:499,label:'3 Months'},
+  '6m':{months:6,price:899,label:'6 Months'},
+  '12m':{months:12,price:1499,label:'12 Months'}
+});
+let chosenSubscription='3m',sellerVerified=false,currentLicenseExpiry=0,paidExpiryTicker=null;
+function stopPaidExpiryTicker(){if(paidExpiryTicker){clearInterval(paidExpiryTicker);paidExpiryTicker=null}}
+function enforcePaidExpiry(){
+  if(licenseMode==='paid'&&currentLicenseExpiry>0&&Date.now()>=currentLicenseExpiry){
+    licenseMode='expired';stop();stopPaidExpiryTicker();setCashierAccessGateVisible(false);
+    licenseGateUI('Subscription Ended','Your paid POS plan has reached its expiry date. Renew to keep using full access.',{expired:true});
+  }
+}
+const paymentRequestsCollection=()=>collection(db,'paymentRequests');
+function paymentMessage(id,message,error=false){const el=$(id);el.textContent=message;el.classList.toggle('error',error)}
+function setSubscriptionPlan(id){
+  if(!SUBSCRIPTION_PLANS[id])return;
+  chosenSubscription=id;
+  document.querySelectorAll('#posPlanChoices [data-plan]').forEach(b=>{
+    const selected=b.dataset.plan===id;
+    b.classList.toggle('selected',selected);
+    b.setAttribute('aria-pressed',String(selected));
+  });
+  const p=SUBSCRIPTION_PLANS[id];
+  $('billingDue').textContent=peso(p.price);
+  $('billingPaid').value=p.price;
+}
+function formatTimestamp(x){return x?.toDate?.().toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'})||'—'}
+function requestStatusMarkup(s){return `<span class="pos-billing-pill ${s==='approved'?'approved':s==='rejected'?'rejected':''}">${esc(String(s||'pending').toUpperCase())}</span>`}
+function renderMyPaymentRequests(docs){
+  const list=docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+  $('myBillingRequests').innerHTML=list.length?list.map(r=>`
+    <div class="pos-billing-order"><b>${esc(SUBSCRIPTION_PLANS[r.planId]?.label||String(r.months)+' Months')} • ${peso(r.amountPaid||0)} ${requestStatusMarkup(r.status)}</b>
+    <div>Reference: ${esc(r.gcashReference)} • Submitted: ${esc(formatTimestamp(r.createdAt))}</div>
+    <div>${r.status==='approved'?'Approved — use Check Payment / Access Status to refresh.':r.status==='rejected'?'Not approved. Contact the seller or submit a corrected request.':'Awaiting seller verification; full access is not active yet.'}</div></div>`).join(''):'<div class="pos-billing-order">No payment requests yet.</div>';
+  return list;
+}
+async function refreshMyPaymentRequests(){
+  if(!user)return [];
+  try{
+    const snap=await getDocs(query(paymentRequestsCollection(),where('ownerUid','==',user.uid)));
+    return renderMyPaymentRequests(snap.docs);
+  }catch(e){$('myBillingRequests').textContent='Unable to check payment requests: '+(e.message||e);return []}
+}
+async function openBilling(){
+  if(!user){alert('Please sign in or create a POS account first.');return}
+  $('billingAccount').value=user.email||user.uid;
+  setSubscriptionPlan(chosenSubscription);
+  paymentMessage('billingMessage','');
+  $('billingDialog').classList.remove('hidden');
+  const list=await refreshMyPaymentRequests();
+  if(list.some(r=>r.status==='pending')){
+    paymentMessage('billingMessage','You already have a pending payment request. Please wait for verification before submitting again.');
+    $('submitBilling').disabled=true;
+  }else $('submitBilling').disabled=false;
+}
+function closeBilling(){$('billingDialog').classList.add('hidden')}
+$('purchaseAccess').onclick=openBilling;
+$('topBillingBtn').onclick=openBilling;
+$('closeBilling').onclick=closeBilling;
+$('billingRefreshAccess').onclick=async()=>{closeBilling();await verifyLicenseAndTrial()};
+$('billingDialog').addEventListener('click',e=>{if(e.target===$('billingDialog'))closeBilling()});
+document.querySelectorAll('#posPlanChoices [data-plan]').forEach(b=>b.onclick=()=>setSubscriptionPlan(b.dataset.plan));
+$('copyGcash').onclick=async()=>{try{await navigator.clipboard.writeText('09483748304');$('copyGcash').textContent='Copied ✓'}catch{alert('GCash number: 0948-374-8304')}};
+$('submitBilling').onclick=async()=>{
+  if(!user)return;
+  const plan=SUBSCRIPTION_PLANS[chosenSubscription];
+  const gcashReference=$('billingRef').value.replace(/\s+/g,'').trim().toUpperCase();
+  const payerName=$('billingSender').value.trim();
+  const amountPaid=Number($('billingPaid').value);
+  if(!/^[A-Z0-9-]{6,40}$/.test(gcashReference))return paymentMessage('billingMessage','Enter a valid GCash reference number (6–40 letters/numbers).',true);
+  if(payerName.length<2||payerName.length>80)return paymentMessage('billingMessage','Enter the sender name shown in GCash.',true);
+  if(!Number.isFinite(amountPaid)||amountPaid<1||amountPaid>100000||Math.abs(Math.round(amountPaid*100)-amountPaid*100)>0.000001)return paymentMessage('billingMessage','Enter a valid paid amount up to two decimal places.',true);
+  if(amountPaid!==plan.price && !confirm(`Selected price: ${peso(plan.price)}. Entered payment: ${peso(amountPaid)}. Submit this amount for manual verification anyway?`))return;
+  const btn=$('submitBilling');btn.disabled=true;
+  try{
+    const existing=await refreshMyPaymentRequests();
+    if(existing.some(r=>r.status==='pending'))throw new Error('A payment is already pending verification. Please wait for the seller to review it.');
+    const newRef=doc(paymentRequestsCollection());
+    await setDoc(newRef,{
+      ownerUid:user.uid,ownerEmail:user.email||'',planId:chosenSubscription,months:plan.months,
+      expectedAmount:plan.price,amountPaid,gcashReference,payerName,
+      status:'pending',createdAt:serverTimestamp()
+    });
+    $('billingRef').value='';
+    paymentMessage('billingMessage','Payment reference submitted successfully. Status: PENDING VERIFICATION. Access will activate only after the seller verifies and approves your GCash payment.');
+    await refreshMyPaymentRequests();
+  }catch(e){paymentMessage('billingMessage','Submission failed: '+(e.message||e),true)}
+  finally{btn.disabled=false}
+};
+async function verifySellerRole(){
+  if(!user)return;
+  const uid=user.uid;
+  try{
+    const seller=await getDocFromServer(doc(db,'sellerAdmins',uid));
+    if(!user||user.uid!==uid)return;
+    sellerVerified=seller.exists()&&seller.data()?.active===true;
+  }catch(e){sellerVerified=false}
+  $('sellerBillingOpen').classList.toggle('hidden',!sellerVerified);
+  $('topSellerBilling').classList.toggle('hidden',!sellerVerified);
+}
+async function openSellerBilling(){
+  if(!sellerVerified||!user)return;
+  $('sellerBillingDialog').classList.remove('hidden');
+  paymentMessage('sellerBillingMsg','');
+  await refreshSellerPayments();
+}
+function closeSellerBilling(){$('sellerBillingDialog').classList.add('hidden')}
+$('sellerBillingOpen').onclick=openSellerBilling;
+$('topSellerBilling').onclick=openSellerBilling;
+$('closeSellerBilling').onclick=closeSellerBilling;
+$('sellerBillingDialog').addEventListener('click',e=>{if(e.target===$('sellerBillingDialog'))closeSellerBilling()});
+$('sellerPaymentFilter').onchange=refreshSellerPayments;
+$('refreshSellerBilling').onclick=refreshSellerPayments;
+async function refreshSellerPayments(){
+  if(!sellerVerified||!user)return;
+  $('sellerPaymentList').textContent='Loading payment records…';
+  try{
+    const snap=await getDocs(query(paymentRequestsCollection(),orderBy('createdAt','desc'),limit(100)));
+    const records=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const pendingOnly=$('sellerPaymentFilter').value==='pending';
+    const view=records.filter(p=>!pendingOnly||p.status==='pending');
+    $('sellerPaymentList').innerHTML=view.length?view.map(r=>`
+      <div class="pos-billing-order">
+        <b>${esc(r.ownerEmail)} ${requestStatusMarkup(r.status)}</b>
+        <div class="pos-seller-grid"><div>Plan: ${esc(SUBSCRIPTION_PLANS[r.planId]?.label||r.planId)} • Due ${peso(r.expectedAmount)}</div><div>Paid: <b style="display:inline">${peso(r.amountPaid)}</b></div></div>
+        <div>GCash Ref: <strong>${esc(r.gcashReference)}</strong> • Sender: ${esc(r.payerName)}</div>
+        <div>Submitted: ${esc(formatTimestamp(r.createdAt))} • UID: ${esc(r.ownerUid)}</div>
+        ${r.status==='pending'?`<div class="pos-seller-actions">
+          <button class="btn green" type="button" data-payment-id="${attr(r.id)}" data-billing-action="approve">Approve & Activate</button>
+          <button class="btn danger" type="button" data-payment-id="${attr(r.id)}" data-billing-action="reject">Reject</button>
+        </div>`:''}
+      </div>`).join(''):'<div class="pos-billing-order">No matching payment requests.</div>';
+    $('sellerPaymentList').querySelectorAll('[data-billing-action]').forEach(btn=>btn.onclick=async()=>{
+      const id=btn.dataset.paymentId,action=btn.dataset.billingAction;
+      const record=records.find(r=>r.id===id);
+      if(!record)return;
+      if(action==='approve'){
+        if(!confirm(`Have you independently verified the GCash transfer?\nBuyer: ${record.ownerEmail}\nRef: ${record.gcashReference}\nExpected: ${peso(record.expectedAmount)}\nReceived (claimed): ${peso(record.amountPaid)}\n\nApprove and activate ${record.months} months?`))return;
+      }else if(!confirm(`Reject payment reference ${record.gcashReference}?`))return;
+      btn.disabled=true;
+      try{await reviewPayment(id,action);paymentMessage('sellerBillingMsg',action==='approve'?'Payment approved and license activated.':'Payment request rejected.');await refreshSellerPayments()}
+      catch(e){paymentMessage('sellerBillingMsg','Unable to review: '+(e.message||e),true);btn.disabled=false}
+    });
+  }catch(e){$('sellerPaymentList').textContent='Payment list error: '+(e.message||e)}
+}
+function addCalendarMonths(startDate,months){
+  const date=new Date(startDate.getTime());const day=date.getUTCDate();date.setUTCDate(1);
+  date.setUTCMonth(date.getUTCMonth()+months);
+  const lastDay=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+1,0)).getUTCDate();
+  date.setUTCDate(Math.min(day,lastDay));return date;
+}
+async function reviewPayment(requestId,action){
+  if(!sellerVerified||!user)throw new Error('Seller authorization required.');
+  await runTransaction(db,async tx=>{
+    const r=doc(db,'paymentRequests',requestId);
+    const reqSnap=await tx.get(r);
+    if(!reqSnap.exists()||reqSnap.data().status!=='pending')throw new Error('Request was already reviewed or no longer exists.');
+    const p=reqSnap.data(),plan=SUBSCRIPTION_PLANS[p.planId];
+    if(!plan||p.months!==plan.months||p.expectedAmount!==plan.price)throw new Error('Payment plan does not match official price.');
+    const licRef=doc(db,'licenses',p.ownerUid),userRef=doc(db,'users',p.ownerUid);
+    // Firestore transactions: all reads MUST precede any write.
+    const existing=action==='approve'?await tx.get(licRef):null;
+    const buyer=action==='approve'?await tx.get(userRef):null;
+    if(action==='approve'&&!buyer?.exists())throw new Error('Buyer profile not found.');
+    if(action==='approve'){
+      const now=new Date(),prev=existing?.exists()?existing.data():null;
+      const oldExpiry=prev?.expiresAt?.toDate?.();
+      const base=oldExpiry&&oldExpiry>now?oldExpiry:now;
+      const expiresAt=addCalendarMonths(base,plan.months);
+      const workspaceId=prev?.workspaceId||('pos_'+p.ownerUid);
+      if(!/^pos_[A-Za-z0-9_-]{6,160}$/.test(workspaceId))throw new Error('Invalid workspace ID, check seller setup.');
+      tx.set(licRef,{
+        status:'active',workspaceId,planId:p.planId,months:p.months,
+        expiresAt,approvedRequestId:requestId,activatedAt:serverTimestamp(),
+        updatedAt:serverTimestamp(),sellerUid:user.uid
+      },{merge:true});
+      const requested=buyer.data().requestedRole==='admin'?'admin':'staff';
+      tx.update(userRef,{role:requested});
+    }
+    tx.update(r,{status:action==='approve'?'approved':'rejected',reviewedAt:serverTimestamp(),reviewedBy:user.uid});
+  });
+}
 
 /* Auth */
 function updateRegistrationRoleMessage(){
@@ -17887,7 +18175,9 @@ onAuthStateChanged(auth,async u=>{
   user=u||null;
   staffMobileInitialRouteDone=false;
   if(!u){
-    ++licenseToken;licenseMode='locked';stopTrialTicker();
+    ++licenseToken;licenseMode='locked';stopTrialTicker();stopPaidExpiryTicker();currentLicenseExpiry=0;
+    sellerVerified=false; $('sellerBillingOpen').classList.add('hidden'); $('topSellerBilling').classList.add('hidden');
+    $('billingDialog').classList.add('hidden'); $('sellerBillingDialog').classList.add('hidden');
     $('licenseGate').classList.add('hidden');document.body.classList.add('license-lock');
     const directToLogin=explicitSignOutToLogin;
     explicitSignOutToLogin=false;
@@ -17931,9 +18221,9 @@ onAuthStateChanged(auth,async u=>{
     return;
   }
   cloud('Checking license...');
-  await verifyLicenseAndTrial();
+  await Promise.all([verifySellerRole(), verifyLicenseAndTrial()]);
 });
 </script>
-<!-- v63 FINAL: Cashier Login opens POS directly; End Duty + Sign Out live inside POS; mobile checkout logic unchanged -->
+<!-- POS v75: Subscription + verified GCash billing; desktop/mobile -->
 </body>
 </html>
